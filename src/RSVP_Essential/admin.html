@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wedding Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+    <style>
+        /* ── Reset & tokens ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+          --cream:    #faf6f1;
+          --ivory:    #f2ebe1;
+          --blush:    #d4a58a;
+          --rose:     #b8705a;
+          --mocha:    #7a4f3a;
+          --charcoal: #2c2118;
+          --muted:    #9c8272;
+          --border:   rgba(180,140,110,.22);
+          --shadow:   0 4px 24px rgba(80,40,20,.08);
+          --shadow-lg:0 16px 48px rgba(80,40,20,.14);
+          --radius:   16px;
+          --ease:     cubic-bezier(.4,0,.2,1);
+          --sidebar:  260px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+          min-height: 100vh;
+          background: var(--cream);
+          font-family: 'Jost', sans-serif;
+          font-weight: 300;
+          color: var(--charcoal);
+        }
+
+        /* ── Background texture ── */
+        body::before {
+          content: '';
+          position: fixed;
+          inset: 0;
+          background:
+            radial-gradient(ellipse 70% 50% at 5%  0%,  rgba(212,165,138,.14) 0%, transparent 55%),
+            radial-gradient(ellipse 50% 40% at 95% 100%, rgba(122,79,58,.08)  0%, transparent 50%);
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        /* ── Layout ── */
+        .layout {
+          position: relative;
+          z-index: 1;
+          display: grid;
+          grid-template-rows: auto 1fr;
+          min-height: 100vh;
+        }
+
+        /* ── Top header bar ── */
+        .topbar {
+          background: linear-gradient(135deg, var(--mocha) 0%, var(--rose) 60%, var(--blush) 100%);
+          padding: 0 40px;
+          height: 70px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          box-shadow: 0 4px 20px rgba(122,79,58,.25);
+          position: sticky;
+          top: 0;
+          z-index: 100;
+        }
+
+        .topbar-brand {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+        }
+        .topbar-brand .logo {
+          width: 38px; height: 38px;
+          background: rgba(255,255,255,.2);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 18px;
+          backdrop-filter: blur(4px);
+        }
+        .topbar-brand h1 {
+          font-family: 'Cormorant Garamond', serif;
+          font-weight: 400;
+          font-size: 22px;
+          color: #fff;
+          letter-spacing: .5px;
+        }
+        .topbar-brand h1 em { font-style: italic; font-weight: 300; }
+
+        .topbar-meta {
+          font-size: 12px;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          color: rgba(255,255,255,.6);
+          font-weight: 400;
+        }
+
+        /* ── Main content ── */
+        .main {
+          padding: 36px 40px 60px;
+          max-width: 1100px;
+          margin: 0 auto;
+          width: 100%;
+        }
+
+        /* ── Section label ── */
+        .section-label {
+          font-size: 10px;
+          letter-spacing: 4px;
+          text-transform: uppercase;
+          color: var(--muted);
+          font-weight: 500;
+          margin-bottom: 16px;
+        }
+
+        /* ── Stats row ── */
+        .stats {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+          gap: 20px;
+          margin-bottom: 40px;
+        }
+
+        .stat-card {
+          background: #fff;
+          border-radius: var(--radius);
+          padding: 26px 28px;
+          box-shadow: var(--shadow);
+          border: 1px solid var(--border);
+          position: relative;
+          overflow: hidden;
+          transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+          animation: fadeUp .5s var(--ease) both;
+        }
+        .stat-card:nth-child(2) { animation-delay: .08s; }
+        .stat-card:nth-child(3) { animation-delay: .16s; }
+
+        .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+
+        .stat-card::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 3px;
+          background: linear-gradient(90deg, var(--rose), var(--blush));
+        }
+
+        .stat-label {
+          font-size: 10px;
+          letter-spacing: 3px;
+          text-transform: uppercase;
+          color: var(--muted);
+          font-weight: 500;
+          margin-bottom: 10px;
+        }
+
+        .stat-number {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 52px;
+          font-weight: 300;
+          color: var(--mocha);
+          line-height: 1;
+          transition: opacity .3s;
+        }
+
+        .stat-card.loading .stat-number { opacity: .3; }
+
+        /* ── Search bar ── */
+        .search-wrap {
+          position: relative;
+          margin-bottom: 28px;
+          animation: fadeUp .5s var(--ease) .2s both;
+        }
+
+        .search-icon {
+          position: absolute;
+          left: 18px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: var(--muted);
+          font-size: 16px;
+          pointer-events: none;
+        }
+
+        #search {
+          width: 100%;
+          padding: 15px 18px 15px 46px;
+          background: #fff;
+          border: 1.5px solid var(--border);
+          border-radius: 50px;
+          font-family: 'Jost', sans-serif;
+          font-size: 15px;
+          font-weight: 300;
+          color: var(--charcoal);
+          outline: none;
+          transition: border-color .25s var(--ease), box-shadow .25s var(--ease);
+          box-shadow: var(--shadow);
+        }
+        #search:focus {
+          border-color: var(--blush);
+          box-shadow: 0 0 0 4px rgba(212,165,138,.15), var(--shadow);
+        }
+        #search::placeholder { color: var(--muted); }
+
+        /* ── Guest list header ── */
+        .list-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 16px;
+          animation: fadeUp .5s var(--ease) .28s both;
+        }
+
+        .filter-pills {
+          display: flex;
+          gap: 8px;
+        }
+
+        .pill {
+          padding: 6px 16px;
+          border-radius: 50px;
+          font-size: 11px;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          cursor: pointer;
+          border: 1.5px solid var(--border);
+          background: transparent;
+          color: var(--muted);
+          font-family: 'Jost', sans-serif;
+          font-weight: 500;
+          transition: all .2s var(--ease);
+        }
+        .pill.active, .pill:hover {
+          background: var(--mocha);
+          border-color: var(--mocha);
+          color: #fff;
+        }
+
+        /* ── Guest cards ── */
+        #guestList {
+          display: grid;
+          gap: 14px;
+        }
+
+        .guest {
+          background: #fff;
+          border-radius: var(--radius);
+          padding: 22px 26px;
+          box-shadow: var(--shadow);
+          border: 1px solid var(--border);
+          display: grid;
+          grid-template-columns: 1fr auto;
+          align-items: start;
+          gap: 12px;
+          transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+          animation: fadeUp .4s var(--ease) both;
+        }
+        .guest:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+        .guest-info { display: flex; flex-direction: column; gap: 6px; }
+
+        .guest-name {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 22px;
+          font-weight: 400;
+          color: var(--charcoal);
+        }
+
+        .guest-meta {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          align-items: center;
+        }
+
+        .guest-detail {
+          font-size: 12px;
+          color: var(--muted);
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+
+        .guest-notes {
+          font-size: 13px;
+          color: var(--muted);
+          font-style: italic;
+          margin-top: 4px;
+          line-height: 1.5;
+        }
+
+        /* ── Status badge ── */
+        .badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          padding: 5px 13px;
+          border-radius: 50px;
+          font-size: 11px;
+          letter-spacing: 1.5px;
+          text-transform: uppercase;
+          font-weight: 500;
+          white-space: nowrap;
+        }
+
+        .badge--attending {
+          background: rgba(122,79,58,.1);
+          color: var(--mocha);
+          border: 1px solid rgba(122,79,58,.2);
+        }
+        .badge--declined {
+          background: rgba(180,140,110,.12);
+          color: var(--muted);
+          border: 1px solid var(--border);
+        }
+        .badge--attending::before { content: '●'; font-size: 7px; color: var(--rose); }
+        .badge--declined::before  { content: '○'; font-size: 7px; color: var(--muted); }
+
+        /* ── Empty state ── */
+        .empty-state {
+          text-align: center;
+          padding: 60px 20px;
+          color: var(--muted);
+          display: none;
+        }
+        .empty-state .empty-icon { font-size: 36px; margin-bottom: 12px; }
+        .empty-state p { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-style: italic; }
+
+        /* ── Skeleton loaders ── */
+        .skeleton {
+          background: linear-gradient(90deg, var(--ivory) 25%, #fff 50%, var(--ivory) 75%);
+          background-size: 200% 100%;
+          animation: shimmer 1.4s infinite;
+          border-radius: 8px;
+        }
+        .skeleton-card {
+          background: #fff;
+          border-radius: var(--radius);
+          padding: 22px 26px;
+          box-shadow: var(--shadow);
+          border: 1px solid var(--border);
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .skeleton-line { height: 14px; }
+        .skeleton-name { height: 22px; width: 55%; }
+        .skeleton-tag  { height: 26px; width: 110px; border-radius: 50px; }
+
+        @keyframes shimmer { to { background-position: -200% 0; } }
+
+        /* ── Refresh button ── */
+        .btn-refresh {
+          padding: 8px 20px;
+          border-radius: 50px;
+          border: 1.5px solid var(--border);
+          background: #fff;
+          color: var(--mocha);
+          font-family: 'Jost', sans-serif;
+          font-size: 12px;
+          font-weight: 500;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          cursor: pointer;
+          transition: all .2s var(--ease);
+          box-shadow: var(--shadow);
+        }
+        .btn-refresh:hover { background: var(--mocha); color: #fff; border-color: var(--mocha); }
+        .btn-refresh.spinning svg { animation: spin .8s linear infinite; }
+
+        /* ── Animations ── */
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(18px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Responsive ── */
+        @media (max-width: 680px) {
+          .topbar { padding: 0 20px; }
+          .topbar-meta { display: none; }
+          .main { padding: 24px 20px 48px; }
+          .guest { grid-template-columns: 1fr; }
+          .filter-pills { display: none; }
+        }
+
+        /* ── Password gate overlay ── */
+        #gate {
+          position: fixed;
+          inset: 0;
+          z-index: 9999;
+          background: var(--cream);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+        }
+
+        #gate::before {
+          content: '';
+          position: fixed;
+          inset: 0;
+          background:
+            radial-gradient(ellipse 70% 50% at 10% 10%, rgba(212,165,138,.2) 0%, transparent 55%),
+            radial-gradient(ellipse 60% 50% at 90% 90%, rgba(122,79,58,.1) 0%, transparent 50%);
+          pointer-events: none;
+        }
+
+        .gate-card {
+          position: relative;
+          background: #fff;
+          border-radius: 28px;
+          box-shadow: var(--shadow-lg);
+          border: 1px solid var(--border);
+          width: 100%;
+          max-width: 400px;
+          overflow: hidden;
+          animation: fadeUp .6s var(--ease) both;
+        }
+
+        .gate-hero {
+          background: linear-gradient(145deg, var(--mocha) 0%, var(--rose) 55%, var(--blush) 100%);
+          padding: 40px 36px 32px;
+          text-align: center;
+        }
+
+        .gate-hero .gate-icon {
+          font-size: 32px;
+          margin-bottom: 12px;
+          display: block;
+        }
+
+        .gate-hero h2 {
+          font-family: 'Cormorant Garamond', serif;
+          font-weight: 300;
+          font-size: 30px;
+          color: #fff;
+          letter-spacing: .5px;
+        }
+
+        .gate-hero p {
+          font-size: 11px;
+          letter-spacing: 3px;
+          text-transform: uppercase;
+          color: rgba(255,255,255,.6);
+          margin-top: 6px;
+          font-weight: 400;
+        }
+
+        .gate-body {
+          padding: 32px 36px 36px;
+        }
+
+        .gate-label {
+          font-size: 10px;
+          letter-spacing: 3px;
+          text-transform: uppercase;
+          color: var(--muted);
+          font-weight: 500;
+          display: block;
+          margin-bottom: 10px;
+        }
+
+        .gate-input-wrap {
+          position: relative;
+          margin-bottom: 20px;
+        }
+
+        #gatePassword {
+          width: 100%;
+          padding: 14px 48px 14px 18px;
+          background: var(--ivory);
+          border: 1.5px solid transparent;
+          border-radius: var(--radius);
+          font-family: 'Jost', sans-serif;
+          font-size: 15px;
+          font-weight: 300;
+          color: var(--charcoal);
+          outline: none;
+          transition: border-color .25s var(--ease), box-shadow .25s var(--ease), background .25s var(--ease);
+          letter-spacing: 2px;
+        }
+
+        #gatePassword:focus {
+          border-color: var(--blush);
+          background: #fff;
+          box-shadow: 0 0 0 4px rgba(212,165,138,.15);
+        }
+
+        #gatePassword.error {
+          border-color: #c0392b;
+          box-shadow: 0 0 0 4px rgba(192,57,43,.1);
+          animation: shake .35s var(--ease);
+        }
+
+        /* Toggle password visibility */
+        .toggle-pw {
+          position: absolute;
+          right: 14px;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: var(--muted);
+          font-size: 16px;
+          padding: 4px;
+          line-height: 1;
+          transition: color .2s;
+        }
+        .toggle-pw:hover { color: var(--mocha); }
+
+        .gate-error {
+          font-size: 12px;
+          color: #c0392b;
+          margin-bottom: 16px;
+          min-height: 18px;
+          text-align: center;
+          opacity: 0;
+          transition: opacity .2s;
+        }
+        .gate-error.visible { opacity: 1; }
+
+        .btn-gate {
+          width: 100%;
+          padding: 15px;
+          background: linear-gradient(135deg, var(--mocha), var(--rose));
+          color: #fff;
+          border: none;
+          border-radius: var(--radius);
+          font-family: 'Jost', sans-serif;
+          font-size: 12px;
+          font-weight: 500;
+          letter-spacing: 4px;
+          text-transform: uppercase;
+          cursor: pointer;
+          box-shadow: 0 8px 24px rgba(184,112,90,.35);
+          transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+        }
+        .btn-gate:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(184,112,90,.45); }
+        .btn-gate:active { transform: translateY(0); }
+
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          20%       { transform: translateX(-8px); }
+          40%       { transform: translateX(8px); }
+          60%       { transform: translateX(-5px); }
+          80%       { transform: translateX(5px); }
+        }
+
+        /* Dashboard hidden until unlocked */
+        .layout { display: none; }
+        .layout.unlocked { display: grid; }
+    </style>
+</head>
+<body>
+
+<!-- ── Password Gate Overlay ── -->
+<div id="gate">
+    <div class="gate-card">
+
+        <div class="gate-hero">
+            <span class="gate-icon">🔐</span>
+            <h2>Private Access</h2>
+            <p>Bride &amp; Admin Only</p>
+        </div>
+
+        <div class="gate-body">
+            <label class="gate-label" for="gatePassword">Password</label>
+            <div class="gate-input-wrap">
+                <input
+                        type="password"
+                        id="gatePassword"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                />
+                <button class="toggle-pw" id="togglePw" type="button" title="Show/hide password">👁</button>
+            </div>
+            <p class="gate-error" id="gateError">Incorrect password. Please try again.</p>
+            <button class="btn-gate" id="gateSubmit">Enter Dashboard</button>
+        </div>
+
+    </div>
+</div>
+
+<div class="layout">
+
+    <!-- Top bar -->
+    <header class="topbar">
+        <div class="topbar-brand">
+            <div class="logo">💍</div>
+            <h1>Wedding <em>Dashboard</em></h1>
+        </div>
+        <span class="topbar-meta">Guest Management</span>
+    </header>
+
+    <!-- Main -->
+    <main class="main">
+
+        <!-- Stats -->
+        <p class="section-label">Overview</p>
+        <div class="stats">
+            <div class="stat-card" id="card-total">
+                <div class="stat-label">Total Guests</div>
+                <div class="stat-number" id="totalGuests">—</div>
+            </div>
+            <div class="stat-card" id="card-attending">
+                <div class="stat-label">Attending</div>
+                <div class="stat-number" id="attendingCount">—</div>
+            </div>
+            <div class="stat-card" id="card-declined">
+                <div class="stat-label">Declined</div>
+                <div class="stat-number" id="declinedCount">—</div>
+            </div>
+        </div>
+
+        <!-- Search -->
+        <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search" placeholder="Search by name, status, notes…" autocomplete="off" />
+        </div>
+
+        <!-- List header -->
+        <div class="list-header">
+            <p class="section-label" style="margin:0">Guest List</p>
+            <div style="display:flex;align-items:center;gap:12px">
+                <div class="filter-pills">
+                    <button class="pill active" data-filter="all">All</button>
+                    <button class="pill" data-filter="Will Attend">Attending</button>
+                    <button class="pill" data-filter="Cannot Attend">Declined</button>
+                </div>
+                <button class="btn-refresh" id="refreshBtn" title="Refresh">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                    Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- Guest list -->
+        <div id="guestList" aria-live="polite"></div>
+        <div class="empty-state" id="emptyState">
+            <div class="empty-icon">🔎</div>
+            <p>No guests match your search</p>
+        </div>
+
+    </main>
+</div>
+
+<script>
+    /* ════════════════════════════════════════
+       PASSWORD GATE
+       Change ADMIN_PASSWORD to your own password.
+       Session persists until the tab is closed.
+    ════════════════════════════════════════ */
+    const ADMIN_PASSWORD = "roses2025"; // ← change this
+    const SESSION_KEY    = "wedding_admin_auth";
+
+    function unlock() {
+      document.getElementById("gate").style.display = "none";
+      document.querySelector(".layout").classList.add("unlocked");
+      loadGuests(); // load data only after auth
+    }
+
+    // Already authenticated this session?
+    if (sessionStorage.getItem(SESSION_KEY) === ADMIN_PASSWORD) {
+      unlock();
+    }
+
+    // Submit on button click
+    document.getElementById("gateSubmit").addEventListener("click", checkPassword);
+
+    // Submit on Enter key
+    document.getElementById("gatePassword").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") checkPassword();
+    });
+
+    function checkPassword() {
+      const input = document.getElementById("gatePassword");
+      const error = document.getElementById("gateError");
+
+      if (input.value === ADMIN_PASSWORD) {
+        sessionStorage.setItem(SESSION_KEY, ADMIN_PASSWORD);
+        unlock();
+      } else {
+        input.classList.add("error");
+        error.classList.add("visible");
+        input.value = "";
+        setTimeout(() => input.classList.remove("error"), 400);
+      }
+    }
+
+    // Toggle password visibility
+    document.getElementById("togglePw").addEventListener("click", function () {
+      const input = document.getElementById("gatePassword");
+      input.type  = input.type === "password" ? "text" : "password";
+      this.textContent = input.type === "password" ? "👁" : "🙈";
+    });
+
+    /* ── API — DO NOT modify API_URL ── */
+    const API_URL = "https://script.google.com/macros/s/AKfycbzc06dJ2Rj2xwpKK8iphPAJCGXojUCMtsklfEFR2QoMpABY3u-SfWle2vcX0lHlw-be/exec";
+
+    let allGuests = [];
+    let activeFilter = "all";
+
+    /* ── Skeleton placeholder while loading ── */
+    function showSkeletons(n = 5) {
+      const list = document.getElementById("guestList");
+      list.innerHTML = Array.from({ length: n }, () => `
+        <div class="skeleton-card">
+          <div class="skeleton skeleton-name"></div>
+          <div class="skeleton skeleton-tag"></div>
+          <div class="skeleton skeleton-line" style="width:40%"></div>
+        </div>
+      `).join("");
+    }
+
+    /* ── Render guest cards ── */
+    function renderGuests(guests) {
+      const list   = document.getElementById("guestList");
+      const empty  = document.getElementById("emptyState");
+
+      if (!guests.length) {
+        list.innerHTML  = "";
+        empty.style.display = "block";
+        return;
+      }
+      empty.style.display = "none";
+
+      list.innerHTML = guests.map((g, i) => {
+        const isAttending = g.attendance === "Will Attend";
+        const badgeClass  = isAttending ? "badge--attending" : "badge--declined";
+        const notes       = g.notes ? `<p class="guest-notes">${g.notes}</p>` : "";
+
+        return `
+          <div class="guest" style="animation-delay:${i * 0.045}s">
+            <div class="guest-info">
+              <div class="guest-name">${g.name || "—"}</div>
+              <div class="guest-meta">
+                <span class="badge ${badgeClass}">${g.attendance || "—"}</span>
+                ${g.guests ? `<span class="guest-detail">👥 ${g.guests} guest${g.guests != 1 ? 's' : ''}</span>` : ""}
+              </div>
+              ${notes}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    /* ── Update stat counters ── */
+    function updateStats(guests) {
+      const total     = guests.length;
+      const attending = guests.filter(g => g.attendance === "Will Attend").length;
+      const declined  = total - attending;
+
+      animateNumber("totalGuests",    total);
+      animateNumber("attendingCount", attending);
+      animateNumber("declinedCount",  declined);
+    }
+
+    function animateNumber(id, target) {
+      const el = document.getElementById(id);
+      const start = parseInt(el.textContent) || 0;
+      const diff  = target - start;
+      const dur   = 500;
+      let   t0;
+      function step(ts) {
+        if (!t0) t0 = ts;
+        const p = Math.min((ts - t0) / dur, 1);
+        el.textContent = Math.round(start + diff * p);
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    /* ── Filter + search combined ── */
+    function applyFilters() {
+      const query = document.getElementById("search").value.toLowerCase().trim();
+      let filtered = allGuests;
+
+      if (activeFilter !== "all")
+        filtered = filtered.filter(g => g.attendance === activeFilter);
+
+      if (query)
+        filtered = filtered.filter(g =>
+          [g.name, g.attendance, g.notes, g.guests]
+            .join(" ").toLowerCase().includes(query)
+        );
+
+      renderGuests(filtered);
+    }
+
+    /* ── Fetch data from Google Sheets ── */
+    async function loadGuests() {
+      const refreshBtn = document.getElementById("refreshBtn");
+      refreshBtn.classList.add("spinning");
+      showSkeletons();
+
+      document.querySelectorAll(".stat-card").forEach(c => c.classList.add("loading"));
+
+      try {
+        const res  = await fetch(API_URL);
+        const data = await res.json();
+        allGuests  = data;
+        updateStats(data);
+        applyFilters();
+      } catch (err) {
+        document.getElementById("guestList").innerHTML =
+          `<div class="empty-state" style="display:block">
+            <div class="empty-icon">⚠️</div>
+            <p>Could not load guests. Try refreshing.</p>
+          </div>`;
+      } finally {
+        document.querySelectorAll(".stat-card").forEach(c => c.classList.remove("loading"));
+        refreshBtn.classList.remove("spinning");
+      }
+    }
+
+    /* ── Event listeners ── */
+    document.getElementById("search").addEventListener("input", applyFilters);
+
+    document.getElementById("refreshBtn").addEventListener("click", loadGuests);
+
+    document.querySelectorAll(".pill").forEach(pill => {
+      pill.addEventListener("click", function () {
+        document.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
+        this.classList.add("active");
+        activeFilter = this.dataset.filter;
+        applyFilters();
+      });
+    });
+
+    /* ── Init: loadGuests() is called by unlock() after password auth ── */
+</script>
+
+</body>
+</html>

@@ -40,14 +40,58 @@
         .hero-subtitle{font-size:1.8rem}
         .guest-name{font-family:'Amiri',serif;font-size:3.8rem;margin-top:10px}
         .invitation-box{
-        background:#fff;
-        max-width:700px;
-        margin:20px auto;
-        padding:25px;
-        border-radius:20px;
-        box-shadow:0 10px 30px rgba(0,0,0,.08);
-        text-align:center;
-        }
+position:relative;
+max-width:850px;
+margin:40px auto;
+padding:70px 50px;
+background:rgba(255,255,255,.92);
+border-radius:30px;
+box-shadow:0 25px 60px rgba(0,0,0,.08);
+text-align:center;
+overflow:hidden;
+}
+
+.invitation-box::before{
+content:"";
+position:absolute;
+inset:12px;
+border:1.5px solid #d8bf93;
+border-radius:22px;
+}
+
+.invitation-box::after{
+content:"";
+position:absolute;
+inset:24px;
+border:1px solid rgba(216,191,147,.4);
+border-radius:16px;
+}
+.card-ornament{
+font-size:26px;
+color:#c9aa7a;
+letter-spacing:10px;
+margin:15px 0;
+}
+
+.invite-small{
+font-size:1.4rem;
+color:#8b7355;
+margin-bottom:10px;
+}
+
+.invite-name{
+font-family:'Amiri',serif;
+font-size:4rem;
+color:#b89b68;
+margin-bottom:25px;
+}
+
+.invite-text{
+font-family:'Amiri',serif;
+font-size:2rem;
+line-height:2.2;
+color:#333;
+}
         .invitation-card{
         font-family:'Amiri',serif;
         font-size:1.5rem;
@@ -131,18 +175,41 @@
 
 <div class="container">
 
-    <section class="hero">
-        <h1 class="hero-title">حج مبرور</h1>
-        <h2 class="guest-name">تتشرف الحاجة بثينة</h2>
-    </section>
 
     <section class="invitation-box">
-        <div class="invitation-card">
-            بدعوتكم للحضور بمناسبة أداء فريضة الحج<br>
-            سائلين المولى أن يجعل حجنا مبروراً<br>
-            وسعينا مشكوراً<br>
-            وذنبنا مغفوراً
+
+        <div class="card-ornament">
+            ✦ ✦ ✦
         </div>
+
+        <p class="invite-small">
+            تتشرف
+        </p>
+
+        <h2 class="invite-name">
+            الحاجة بثينة
+        </h2>
+
+        <p class="invite-text">
+            بدعوتكم للحضور بمناسبة أداء فريضة الحج
+
+            <br><br>
+
+            سائلين المولى أن يجعله حجاً مبروراً
+
+            <br>
+
+            وسعياً مشكوراً
+
+            <br>
+
+            وذنباً مغفوراً
+        </p>
+
+        <div class="card-ornament">
+            ✦ ✦ ✦
+        </div>
+
     </section>
 
     <h2 class="details-title">تفاصيل المناسبة</h2>

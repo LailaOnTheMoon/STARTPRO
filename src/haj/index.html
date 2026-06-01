@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حج مبرور</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+        font-family:'Noto Naskh Arabic',serif;
+        background:linear-gradient(135deg,#f5f1ed,#ece5db);
+        color:#2c2416;
+        min-height:100vh;
+        overflow-x:hidden;
+        position:relative;
+        }
+        body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:url("kaaba.jpg") center center no-repeat;
+    background-size:700px;
+    opacity:.09;
+    pointer-events:none;
+    z-index:0;
+}
+        body::after{
+        content:"";
+        position:fixed;
+        inset:0;
+        background:url("islamicpattern.png") center/cover no-repeat;
+        opacity:.04;
+        pointer-events:none;
+        z-index:0;
+        }
+        .container{max-width:900px;margin:auto;padding:20px;position:relative;z-index:2}
+        .hero{text-align:center;padding:40px 20px 10px}
+        .hero-title{font-family:'Amiri',serif;font-size:4rem;color:#b89b68}
+        .hero-subtitle{font-size:1.8rem}
+        .guest-name{font-family:'Amiri',serif;font-size:3.8rem;margin-top:10px}
+        .invitation-box{
+        background:#fff;
+        max-width:700px;
+        margin:20px auto;
+        padding:25px;
+        border-radius:20px;
+        box-shadow:0 10px 30px rgba(0,0,0,.08);
+        text-align:center;
+        }
+        .invitation-card{
+        font-family:'Amiri',serif;
+        font-size:1.5rem;
+        line-height:2;
+        }
+        .kaaba-section{text-align:center;padding:15px 0}
+        .kaaba-image{max-width:260px;width:100%;filter:drop-shadow(0 20px 40px rgba(0,0,0,.15))}
+        .details-title,.countdown-title{
+        text-align:center;
+        margin:25px 0;
+        color:#b89b68;
+        font-size:2rem;
+        }
+        .details-grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+        gap:15px;
+        }
+        .detail-card{
+        background:#fff;
+        padding:20px;
+        border-radius:18px;
+        box-shadow:0 8px 25px rgba(0,0,0,.06);
+        text-align:center;
+        }
+        .detail-icon{font-size:2rem}
+        .countdown-section{
+        max-width:700px;
+        margin:25px auto;
+        background:#fff;
+        padding:25px;
+        border-radius:20px;
+        box-shadow:0 10px 30px rgba(0,0,0,.08);
+        }
+        .countdown{
+        display:grid;
+        grid-template-columns:repeat(4,1fr);
+        gap:10px;
+        }
+        .countdown-item{
+        background:#f8f4ee;
+        padding:15px;
+        border-radius:15px;
+        text-align:center;
+        }
+        .countdown-number{
+        font-size:2.2rem;
+        color:#b89b68;
+        font-weight:bold;
+        }
+        .audio-control{
+        position:fixed;
+        bottom:20px;
+        left:20px;
+        width:58px;
+        height:58px;
+        border:none;
+        border-radius:50%;
+        background:linear-gradient(135deg,#b89b68,#d8c29b);
+        color:white;
+        font-size:24px;
+        cursor:pointer;
+        box-shadow:0 10px 30px rgba(184,155,104,.35);
+        z-index:9999;
+        }
+        footer{text-align:center;padding:25px;color:#777}
+        @media(max-width:700px){
+        .hero-title{font-size:3rem}
+        .guest-name{font-size:2.8rem}
+        .countdown{grid-template-columns:repeat(2,1fr)}
+        }
+    </style>
+</head>
+<body>
+
+<button class="audio-control" id="audioToggle">🎵</button>
+
+<audio id="audio-player">
+    <source src="fyahob.mp3" type="audio/mpeg">
+</audio>
+
+<div class="container">
+
+    <section class="hero">
+        <h1 class="hero-title">حج مبرور</h1>
+        <h2 class="guest-name">تتشرف الحاجة بثينة</h2>
+    </section>
+
+    <section class="invitation-box">
+        <div class="invitation-card">
+            بدعوتكم للحضور بمناسبة أداء فريضة الحج<br>
+            سائلين المولى أن يجعل حجنا مبروراً<br>
+            وسعينا مشكوراً<br>
+            وذنبنا مغفوراً
+        </div>
+    </section>
+
+    <h2 class="details-title">تفاصيل المناسبة</h2>
+
+    <section class="details-grid">
+        <div class="detail-card">
+            <div class="detail-icon">📍</div>
+            <div>في منزل الحاجة<br>قرب دائرة السير</div>
+        </div>
+
+        <div class="detail-card">
+            <div class="detail-icon">📅</div>
+            <div>يوم الأربعاء والخميس</div>
+        </div>
+
+        <div class="detail-card">
+            <div class="detail-icon">⏰</div>
+            <div>بعد أذان العصر</div>
+        </div>
+    </section>
+
+    <section class="countdown-section">
+        <h2 class="countdown-title">العد التنازلي</h2>
+        <div class="countdown">
+            <div class="countdown-item"><div id="days" class="countdown-number">00</div><div>يوم</div></div>
+            <div class="countdown-item"><div id="hours" class="countdown-number">00</div><div>ساعة</div></div>
+            <div class="countdown-item"><div id="minutes" class="countdown-number">00</div><div>دقيقة</div></div>
+            <div class="countdown-item"><div id="seconds" class="countdown-number">00</div><div>ثانية</div></div>
+        </div>
+    </section>
+
+    <footer>
+        © 2026 - دعوة الحج المبرور
+    </footer>
+
+</div>
+
+<script>
+    const audioPlayer=document.getElementById('audio-player');
+    const audioToggle=document.getElementById('audioToggle');
+    let isPlaying=false;
+
+    /* تشغيل الموسيقى عند أول تفاعل مع الصفحة */
+    function startMusic(){
+        audioPlayer.play();
+        audioToggle.innerHTML='⏸';
+        isPlaying=true;
+
+        document.removeEventListener('click', startMusic);
+        document.removeEventListener('touchstart', startMusic);
+        document.removeEventListener('scroll', startMusic);
+    }
+
+    document.addEventListener('click', startMusic, {once:true});
+    document.addEventListener('touchstart', startMusic, {once:true});
+    document.addEventListener('scroll', startMusic, {once:true});
+
+    audioToggle.onclick=()=>{
+        if(isPlaying){
+            audioPlayer.pause();
+            audioToggle.innerHTML='🎵';
+        }else{
+            audioPlayer.play();
+            audioToggle.innerHTML='⏸';
+        }
+        isPlaying=!isPlaying;
+    };
+
+    function updateCountdown(){
+        const targetDate=new Date('2026-06-03T16:30:00').getTime();
+        const now=new Date().getTime();
+        const distance=targetDate-now;
+
+        if(distance<0)return;
+
+        document.getElementById('days').textContent=Math.floor(distance/(1000*60*60*24));
+        document.getElementById('hours').textContent=Math.floor((distance%(1000*60*60*24))/(1000*60*60));
+        document.getElementById('minutes').textContent=Math.floor((distance%(1000*60*60))/(1000*60));
+        document.getElementById('seconds').textContent=Math.floor((distance%(1000*60))/1000);
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown,1000);
+</script>
+</body>
+</html>
